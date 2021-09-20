@@ -1,4 +1,4 @@
-import Users from 'App/Models/Users'
+import User from 'App/Models/User'
 import Hash from '@ioc:Adonis/Core/Hash'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
@@ -7,7 +7,7 @@ export default class LoginController {
     const email = request.input('email')
     const password = request.input('password')
 
-    const user = await Users.query().where('email', email).firstOrFail()
+    const user = await User.query().where('email', email).firstOrFail()
 
     if (!(await Hash.verify(password, user.password))) {
       return response.badRequest('Invalid credentials')
@@ -29,6 +29,14 @@ export default class LoginController {
 
     return {
       revoked: true,
+    }
+  }
+
+  public async me({ auth }: HttpContextContract) {
+    // auth.authenticate()
+    console.log(await auth)
+    return {
+      user: auth.check(),
     }
   }
 }

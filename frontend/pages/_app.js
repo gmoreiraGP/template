@@ -7,22 +7,12 @@ function MyApp({ Component, pageProps }) {
     <>
       {Component.requiresAuth && (
         <Head>
-          <script
-            // If no token is found, redirect inmediately
-            dangerouslySetInnerHTML={{
-              __html: `if(!document.cookie || document.cookie.indexOf('token') === -1)
-            {location.replace(
-              "/login?next=" +
-                encodeURIComponent(location.pathname + location.search)
-            )}
-            else {document.documentElement.classList.add("render")}`,
-            }}
-          />
+      
         </Head>
       )}
-      <AuthProvider>
+      {/* <AuthProvider> */}
         <Component {...pageProps} />
-      </AuthProvider>
+      {/* </AuthProvider> */}
     </>
   );
 }

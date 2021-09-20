@@ -1,9 +1,10 @@
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
-import { column, beforeSave, BaseModel, beforeCreate } from '@ioc:Adonis/Lucid/Orm'
+import { column, beforeSave, BaseModel, beforeCreate, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
 import { uuid } from 'uuidv4'
+import Profile from './Profile'
 
-export default class Users extends BaseModel {
+export default class User extends BaseModel {
   public static selfAssignPrimaryKey = true
 
   @column({ isPrimary: true })
@@ -18,6 +19,11 @@ export default class Users extends BaseModel {
   @column()
   public rememberMeToken?: string
 
+  @hasOne(() => Profile, {
+    serializeAs: 'profile',
+  })
+  public profile: HasOne<typeof Profile>
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
@@ -25,14 +31,14 @@ export default class Users extends BaseModel {
   public updatedAt: DateTime
 
   @beforeCreate()
-  public static assignUuid(user: Users) {
+  public static assignUuid(user: User) {
     user.id = uuid()
   }
 
   @beforeSave()
-  public static async hashPassword(users: Users) {
-    if (users.$dirty.password) {
-      users.password = await Hash.make(users.password)
+  public static async hashPassword(user: User) {
+    if (user.$dirty.password) {
+      user.password = await Hash.make(user.password)
     }
   }
 }

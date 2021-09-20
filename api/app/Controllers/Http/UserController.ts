@@ -1,22 +1,20 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Users from 'App/Models/Users'
+import User from 'App/Models/User'
 
 export default class UsersController {
-  public async index({ auth }: HttpContextContract) {
+  public async index({ auth, response }: HttpContextContract) {
     await auth.use('api').authenticate()
 
-    const users = await Users.all()
+    const usersWithProfile = await User.query().preload('profile')
 
-    return {
-      users,
-    }
+    return usersWithProfile
   }
 
   public async store({ auth, request }: HttpContextContract) {
     await auth.use('api').authenticate()
 
     const newUser = request.body()
-    const user = await Users.create(newUser)
+    const user = await User.create(newUser)
 
     return {
       user,

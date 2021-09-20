@@ -1,15 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { authenticateAPI, unauthenticateAPI, routes } from "@template/shared";
 import { useRouter } from "next/router";
 
 const AuthContext = React.createContext({
-  user,
-  authenticate,
-  logout,
-  isLoading,
-  isAuthenticated,
-  token,
+
 });
 
 export const AuthProvider = ({ children }) => {
@@ -18,9 +12,9 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const isAuthenticated = !!user;
 
-  const logout = ({ redirectLocation }) => {
+  const logout = () => {
     Cookies.remove("token");
-    unauthenticateAPI();
+    
     setUser(null);
     setIsLoading(false);
     console.log("Redirecting");
@@ -29,14 +23,13 @@ export const AuthProvider = ({ children }) => {
 
   const authenticate = async (token) => {
     setIsLoading(true);
-    authenticateAPI(token);
     try {
-      const { data: user } = await routes.user.me.request();
+      
       setUser(user);
       Cookies.set("token", token);
     } catch (error) {
       console.log({ error });
-      unauthenticateAPI();
+      
       setUser(null);
       Cookies.remove("token");
     }
@@ -50,25 +43,8 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const Component = children.type;
-
-    // If it doesn't require auth, everything's good.
-    if (!Component.requiresAuth) return;
-
-    // If we're already authenticated, everything's good.
-    if (isAuthenticated) return;
-
-    // If we don't have a token in the cookies, logout
-    const token = Cookies.get("token");
-    if (!token) {
-      return logout({ redirectLocation: Component.redirectUnauthenticatedTo });
-    }
-
-    // If we're not loading give the try to authenticate with the given token.
-    if (!isLoading) {
-      authenticate(token);
-    }
-  }, [isLoading, isAuthenticated, children.type.requiresAuth]);
+    //
+  }, []);
 
   return (
     <AuthContext.Provider
