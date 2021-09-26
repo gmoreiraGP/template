@@ -1,19 +1,10 @@
-import Head from "next/head";
-import { AuthProvider, useAuth } from "../contexts/AuthContext";
-import "../styles/globals.css";
+import { Provider } from "next-auth/client";
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (
-    <>
-      {Component.requiresAuth && (
-        <Head>
-      
-        </Head>
-      )}
-      {/* <AuthProvider> */}
-        <Component {...pageProps} />
-      {/* </AuthProvider> */}
-    </>
+    <Provider session={session}>
+      <Component {...pageProps} />
+    </Provider>
   );
 }
 
